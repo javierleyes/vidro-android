@@ -3,14 +3,28 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useVisitsStore } from '@/store/visitsStore';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
-import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitsScreen() {
-  const { visits, deleteVisit, completeVisit } = useVisitsStore();
+  const { visits, deleteVisit, completeVisit, addVisit } = useVisitsStore();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<{id: number, name: string} | null>(null);
+  
+  // Form state for adding new visit
+  const [formData, setFormData] = useState({
+    date: '',
+    name: '',
+    address: '',
+    phone: ''
+  });
+  
+  // Date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleCompleteVisit = (visitId: number, visitorName: string) => {
     setSelectedVisit({ id: visitId, name: visitorName });
@@ -46,6 +60,85 @@ export default function VisitsScreen() {
   const cancelDelete = () => {
     setDeleteModalVisible(false);
     setSelectedVisit(null);
+  };
+
+  const handleAddVisit = () => {
+    setAddModalVisible(true);
+  };
+
+  const validateForm = () => {
+    if (!formData.date.trim()) {
+      Alert.alert('Error', 'Please enter a date');
+      return false;
+    }
+    if (!formData.name.trim()) {
+      Alert.alert('Error', 'Please enter a name');
+      return false;
+    }
+    if (!formData.address.trim()) {
+      Alert.alert('Error', 'Please enter an address');
+      return false;
+    }
+    if (!formData.phone.trim()) {
+      Alert.alert('Error', 'Please enter a phone number');
+      return false;
+    }
+    
+    // Validate date format (basic check)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(formData.date)) {
+      Alert.alert('Error', 'Please enter date in YYYY-MM-DD format');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const confirmAddVisit = () => {
+    if (!validateForm()) return;
+    
+    const newVisit = {
+      id: Date.now(), // Simple ID generation
+      date: formData.date,
+      name: formData.name,
+      address: formData.address,
+      phone: formData.phone
+    };
+    
+    addVisit(newVisit);
+    setAddModalVisible(false);
+    resetForm();
+  };
+
+  const cancelAddVisit = () => {
+    setAddModalVisible(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setFormData({
+      date: '',
+      name: '',
+      address: '',
+      phone: ''
+    });
+    setSelectedDate(new Date());
+  };
+
+  const handleDateChange = (event: any, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    
+    if (date) {
+      setSelectedDate(date);
+      const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+      setFormData({...formData, date: formattedDate});
+    }
+  };
+
+  const showDatePickerModal = () => {
+    setShowDatePicker(true);
   };
 
   return (
@@ -128,10 +221,7 @@ export default function VisitsScreen() {
         <ThemedView style={styles.addButtonContainer}>
           <TouchableOpacity 
             style={styles.addButton}
-            onPress={() => {
-              // TODO: Implement add new visit functionality
-              console.log('Add new visit pressed');
-            }}
+            onPress={handleAddVisit}
           >
             <IconSymbol size={20} name="plus.circle" color="#FFFFFF" />
             <ThemedText style={styles.addButtonText}>Add New Visit</ThemedText>
@@ -215,6 +305,100 @@ export default function VisitsScreen() {
                 onPress={confirmComplete}
               >
                 <ThemedText style={styles.completeButtonText}>Complete</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          </ThemedView>
+        </View>
+      </Modal>
+
+      {/* Add New Visit Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={addModalVisible}
+        onRequestClose={cancelAddVisit}
+      >
+        <View style={styles.modalOverlay}>
+          <ThemedView style={styles.formModalContainer}>
+            <ThemedView style={styles.modalHeader}>
+              <IconSymbol size={40} name="plus.circle" color="#2196F3" />
+              <ThemedText type="subtitle" style={styles.modalTitle}>Add New Visit</ThemedText>
+            </ThemedView>
+            
+            <ScrollView style={styles.formContainer}>
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={styles.inputLabel}>Date *</ThemedText>
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={showDatePickerModal}
+                >
+                  <ThemedText style={styles.datePickerText}>
+                    {formData.date || 'Select Date'}
+                  </ThemedText>
+                  <IconSymbol size={20} name="calendar" color="#2196F3" />
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleDateChange}
+                    minimumDate={new Date()}
+                  />
+                )}
+              </ThemedView>
+
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={styles.inputLabel}>Name *</ThemedText>
+                <TextInput
+                  style={styles.input}
+                  value={formData.name}
+                  onChangeText={(text) => setFormData({...formData, name: text})}
+                  placeholder="Enter visitor's name"
+                  placeholderTextColor="#999"
+                />
+              </ThemedView>
+
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={styles.inputLabel}>Address *</ThemedText>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  value={formData.address}
+                  onChangeText={(text) => setFormData({...formData, address: text})}
+                  placeholder="Enter full address"
+                  placeholderTextColor="#999"
+                  multiline={true}
+                  numberOfLines={3}
+                />
+              </ThemedView>
+
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={styles.inputLabel}>Phone *</ThemedText>
+                <TextInput
+                  style={styles.input}
+                  value={formData.phone}
+                  onChangeText={(text) => setFormData({...formData, phone: text})}
+                  placeholder="(555) 123-4567"
+                  placeholderTextColor="#999"
+                  keyboardType="phone-pad"
+                />
+              </ThemedView>
+
+              <ThemedText style={styles.requiredNote}>* Required fields</ThemedText>
+            </ScrollView>
+
+            <ThemedView style={styles.modalActions}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={cancelAddVisit}
+              >
+                <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.confirmAddButton]}
+                onPress={confirmAddVisit}
+              >
+                <ThemedText style={styles.addButtonTextModal}>Add Visit</ThemedText>
               </TouchableOpacity>
             </ThemedView>
           </ThemedView>
@@ -347,8 +531,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    minWidth: 300,
-    maxWidth: 400,
+    minWidth: 350,
+    maxWidth: 500,
   },
   modalHeader: {
     alignItems: 'center',
@@ -410,5 +594,76 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Form Modal styles
+  formModalContainer: {
+    margin: 20,
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    minWidth: 400,
+    maxWidth: 600,
+    maxHeight: '85%',
+  },
+  formContainer: {
+    maxHeight: 500,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+    color: '#333',
+  },
+  textArea: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  requiredNote: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    opacity: 0.7,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  confirmAddButton: {
+    backgroundColor: '#2196F3',
+  },
+  addButtonTextModal: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  datePickerButton: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: 40,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
