@@ -107,11 +107,13 @@ export default function VisitsScreen() {
     
     addVisit(newVisit);
     setAddModalVisible(false);
+    setShowDatePicker(false);
     resetForm();
   };
 
   const cancelAddVisit = () => {
     setAddModalVisible(false);
+    setShowDatePicker(false);
     resetForm();
   };
 
@@ -123,6 +125,7 @@ export default function VisitsScreen() {
       phone: ''
     });
     setSelectedDate(new Date());
+    setShowDatePicker(false);
   };
 
   const handleDateChange = (event: any, date?: Date) => {
