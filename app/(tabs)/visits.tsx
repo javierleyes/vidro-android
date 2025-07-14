@@ -1,11 +1,10 @@
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useVisitsStore } from '@/store/visitsStore';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
-import { Alert, Modal, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitsScreen() {
   const { visits, deleteVisit, completeVisit, addVisit } = useVisitsStore();
@@ -145,92 +144,92 @@ export default function VisitsScreen() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="calendar"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Future Visits</ThemedText>
-      </ThemedView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <IconSymbol
+            size={60}
+            color="#2196F3"
+            name="calendar"
+            style={styles.headerIcon}
+          />
+          <View style={styles.titleContainer}>
+            <ThemedText type="title" style={styles.titleText}>Future Visits</ThemedText>
+          </View>
+        </View>
       
-      <ThemedView style={styles.tableContainer}>
+      <View style={styles.tableContainer}>
         {/* Table Header */}
-        <ThemedView style={styles.tableHeader}>
-          <ThemedView style={styles.columnHeader}>
+        <View style={styles.tableHeader}>
+          <View style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Day</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.columnHeader}>
+          </View>
+          <View style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Name</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.columnHeader}>
+          </View>
+          <View style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Address</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.columnHeader}>
+          </View>
+          <View style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Phone</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.columnHeaderActions}>
+          </View>
+          <View style={styles.columnHeaderActions}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Actions</ThemedText>
-          </ThemedView>
-        </ThemedView>
+          </View>
+        </View>
 
         {/* Table Rows */}
         <ScrollView style={styles.tableBody}>
           {visits
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map((visit) => (
-            <ThemedView key={visit.id} style={styles.tableRow}>
-              <ThemedView style={styles.column}>
+            <View key={visit.id} style={styles.tableRow}>
+              <View style={styles.column}>
                 <ThemedText style={styles.cellText}>
                   {new Date(visit.date).toLocaleDateString('es-AR', { 
                     weekday: 'short', 
                     day: 'numeric' 
                   })}
                 </ThemedText>
-              </ThemedView>
-              <ThemedView style={styles.column}>
+              </View>
+              <View style={styles.column}>
                 <ThemedText style={styles.cellText}>{visit.name}</ThemedText>
-              </ThemedView>
-              <ThemedView style={styles.column}>
+              </View>
+              <View style={styles.column}>
                 <ThemedText style={styles.cellText} numberOfLines={2}>{visit.address}</ThemedText>
-              </ThemedView>
-              <ThemedView style={styles.column}>
+              </View>
+              <View style={styles.column}>
                 <ThemedText style={styles.cellText}>{visit.phone}</ThemedText>
-              </ThemedView>
-              <ThemedView style={styles.columnActions}>
+              </View>
+              <View style={styles.columnActions}>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.completeButton]}
                   onPress={() => handleCompleteVisit(visit.id, visit.name)}
                 >
-                  <IconSymbol size={18} name="checkmark.circle" color="#FFFFFF" />
+                  <ThemedText style={styles.buttonIcon}>✔️</ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.deleteButton]}
                   onPress={() => handleDeleteVisit(visit.id, visit.name)}
                 >
-                  <IconSymbol size={18} name="xmark.circle" color="#FFFFFF" />
+                  <ThemedText style={styles.buttonIcon}>❌</ThemedText>
                 </TouchableOpacity>
-              </ThemedView>
-            </ThemedView>
+              </View>
+            </View>
           ))}
         </ScrollView>
         
         {/* Add New Visit Button */}
-        <ThemedView style={styles.addButtonContainer}>
+        <View style={styles.addButtonContainer}>
           <TouchableOpacity 
             style={styles.addButton}
             onPress={handleAddVisit}
           >
-            <IconSymbol size={20} name="plus.circle" color="#FFFFFF" />
-            <ThemedText style={styles.addButtonText}>Add New Visit</ThemedText>
+            <ThemedText style={styles.addButtonIcon}>➕</ThemedText>
           </TouchableOpacity>
-        </ThemedView>
-      </ThemedView>
+        </View>
+      </View>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -407,26 +406,43 @@ export default function VisitsScreen() {
           </ThemedView>
         </View>
       </Modal>
-    </ParallaxScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 10,
+    backgroundColor: '#ffffff',
+  },
+  headerIcon: {
+    marginBottom: 10,
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 16,
   },
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  titleText: {
+    color: '#333333',
+    fontWeight: 'bold',
   },
   tableContainer: {
     flex: 1,
     marginTop: 8,
+    marginHorizontal: 16,
+    backgroundColor: '#ffffff',
   },
   tableHeader: {
     flexDirection: 'row',
@@ -434,21 +450,27 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingBottom: 8,
     marginBottom: 8,
+    backgroundColor: '#ffffff',
   },
   columnHeader: {
     flex: 1,
     paddingHorizontal: 4,
+    backgroundColor: '#ffffff',
   },
   columnHeaderActions: {
     width: 120,
     paddingHorizontal: 4,
+    backgroundColor: '#ffffff',
   },
   headerText: {
     fontSize: 14,
     textAlign: 'center',
+    color: '#333333',
+    fontWeight: '600',
   },
   tableBody: {
     flex: 1,
+    backgroundColor: '#ffffff',
   },
   tableRow: {
     flexDirection: 'row',
@@ -456,11 +478,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     minHeight: 60,
+    backgroundColor: '#ffffff',
   },
   column: {
     flex: 1,
     paddingHorizontal: 4,
     justifyContent: 'center',
+    backgroundColor: '#ffffff',
   },
   columnActions: {
     width: 120,
@@ -468,6 +492,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+    backgroundColor: '#ffffff',
   },
   actionButton: {
     padding: 8,
@@ -482,28 +507,30 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   completeButton: {
-    backgroundColor: '#4CAF50',
-    borderColor: '#45A049',
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
   },
   deleteButton: {
-    backgroundColor: '#F44336',
-    borderColor: '#D32F2F',
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
   },
   cellText: {
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 16,
+    color: '#333333',
   },
   addButtonContainer: {
     marginTop: 16,
     paddingHorizontal: 16,
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
   },
   addButton: {
-    backgroundColor: '#2196F3',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -511,6 +538,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    minWidth: 40,
+    width: 40,
   },
   addButtonText: {
     color: '#FFFFFF',
@@ -668,5 +697,14 @@ const styles = StyleSheet.create({
   datePickerText: {
     fontSize: 16,
     color: '#333',
+  },
+  buttonIcon: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  addButtonIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2196F3',
   },
 });
