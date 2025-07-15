@@ -3,15 +3,20 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useVisitsStore } from '@/store/visitsStore';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
-import { Alert, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitsScreen() {
-  const { visits, deleteVisit, completeVisit, addVisit } = useVisitsStore();
+  const { visits, isLoading, error, deleteVisit, completeVisit, addVisit, fetchVisits } = useVisitsStore();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<{id: number, name: string} | null>(null);
+  
+  // Fetch visits when component mounts
+  useEffect(() => {
+    fetchVisits();
+  }, [fetchVisits]);
   
   // Form state for adding new visit
   const [formData, setFormData] = useState({
@@ -181,43 +186,64 @@ export default function VisitsScreen() {
 
         {/* Table Rows */}
         <ScrollView style={styles.tableBody}>
-          {visits
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .map((visit) => (
-            <View key={visit.id} style={styles.tableRow}>
-              <View style={styles.column}>
-                <ThemedText style={styles.cellText}>
-                  {new Date(visit.date).toLocaleDateString('es-AR', { 
-                    weekday: 'short', 
-                    day: 'numeric' 
-                  })}
-                </ThemedText>
-              </View>
-              <View style={styles.column}>
-                <ThemedText style={styles.cellText}>{visit.name}</ThemedText>
-              </View>
-              <View style={styles.column}>
-                <ThemedText style={styles.cellText} numberOfLines={2}>{visit.address}</ThemedText>
-              </View>
-              <View style={styles.column}>
-                <ThemedText style={styles.cellText}>{visit.phone}</ThemedText>
-              </View>
-              <View style={styles.columnActions}>
-                <TouchableOpacity 
-                  style={[styles.actionButton, styles.completeButton]}
-                  onPress={() => handleCompleteVisit(visit.id, visit.name)}
-                >
-                  <ThemedText style={styles.buttonIcon}>✔️</ThemedText>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.actionButton, styles.deleteButton]}
-                  onPress={() => handleDeleteVisit(visit.id, visit.name)}
-                >
-                  <ThemedText style={styles.buttonIcon}>❌</ThemedText>
-                </TouchableOpacity>
-              </View>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#2196F3" />
+              <ThemedText style={styles.loadingText}>Loading visits...</ThemedText>
             </View>
-          ))}
+          ) : error ? (
+            <View style={styles.errorContainer}>
+              <ThemedText style={styles.errorText}>Error: {error}</ThemedText>
+              <TouchableOpacity 
+                style={styles.retryButton}
+                onPress={fetchVisits}
+              >
+                <ThemedText style={styles.retryButtonText}>Retry</ThemedText>
+              </TouchableOpacity>
+            </View>
+          ) : visits.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <ThemedText style={styles.emptyText}>No visits scheduled</ThemedText>
+            </View>
+          ) : (
+            visits
+              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+              .map((visit) => (
+              <View key={visit.id} style={styles.tableRow}>
+                <View style={styles.column}>
+                  <ThemedText style={styles.cellText}>
+                    {new Date(visit.date).toLocaleDateString('es-AR', { 
+                      weekday: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </ThemedText>
+                </View>
+                <View style={styles.column}>
+                  <ThemedText style={styles.cellText}>{visit.name}</ThemedText>
+                </View>
+                <View style={styles.column}>
+                  <ThemedText style={styles.cellText} numberOfLines={2}>{visit.address}</ThemedText>
+                </View>
+                <View style={styles.column}>
+                  <ThemedText style={styles.cellText}>{visit.phone}</ThemedText>
+                </View>
+                <View style={styles.columnActions}>
+                  <TouchableOpacity 
+                    style={[styles.actionButton, styles.completeButton]}
+                    onPress={() => handleCompleteVisit(visit.id, visit.name)}
+                  >
+                    <ThemedText style={styles.buttonIcon}>✔️</ThemedText>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.actionButton, styles.deleteButton]}
+                    onPress={() => handleDeleteVisit(visit.id, visit.name)}
+                  >
+                    <ThemedText style={styles.buttonIcon}>❌</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
         </ScrollView>
         
         {/* Add New Visit Button */}
@@ -706,5 +732,55 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#2196F3',
+  },
+  // Loading, error, and empty states
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+    backgroundColor: '#ffffff',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+    backgroundColor: '#ffffff',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#F44336',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: '#2196F3',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+    backgroundColor: '#ffffff',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
   },
 });
