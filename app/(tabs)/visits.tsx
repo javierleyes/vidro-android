@@ -98,21 +98,25 @@ export default function VisitsScreen() {
     return true;
   };
 
-  const confirmAddVisit = () => {
+  const confirmAddVisit = async () => {
     if (!validateForm()) return;
     
     const newVisit = {
-      id: Date.now(), // Simple ID generation
       date: formData.date,
       name: formData.name,
       address: formData.address,
       phone: formData.phone
     };
     
-    addVisit(newVisit);
+    try {
+      await addVisit(newVisit);
     setAddModalVisible(false);
     setShowDatePicker(false);
     resetForm();
+    } catch (error) {
+      // Error is already handled in the store, but you could add additional UI feedback here
+      console.error('Failed to add visit:', error);
+    }
   };
 
   const cancelAddVisit = () => {

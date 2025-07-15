@@ -1,3 +1,4 @@
+import { API_URLS } from '@/constants/ApiUrls';
 import { create } from 'zustand';
 
 export interface Visit {
@@ -14,7 +15,7 @@ interface VisitsState {
   isLoading: boolean;
   error: string | null;
   fetchVisits: () => Promise<void>;
-  addVisit: (visit: Visit) => void;
+  addVisit: (visit: Omit<Visit, 'id'>) => Promise<void>;
   deleteVisit: (id: number) => void;
   completeVisit: (id: number) => void;
   updateVisit: (id: number, updatedVisit: Partial<Visit>) => void;
@@ -31,7 +32,7 @@ export const useVisitsStore = create<VisitsState>((set, get) => ({
     set({ isLoading: true, error: null });
     
     try {
-      const response = await fetch('https://localhost:58224/visits'); // Replace with your API endpoint
+      const response = await fetch(API_URLS.GET_ALL_VISITS); 
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -47,10 +48,35 @@ export const useVisitsStore = create<VisitsState>((set, get) => ({
     }
   },
   
-  addVisit: (visit: Visit) =>
-    set((state) => ({
-      visits: [...state.visits, visit]
-    })),
+  addVisit: async (visit: Omit<Visit, 'id'>) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await fetch(API_URLS.CREATE_VISIT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(visit),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const newVisit: Visit = await response.json();
+      
+      set((state) => ({
+        visits: [...state.visits, newVisit],
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to add visit',
+        isLoading: false 
+      });
+    }
+  },
   
   deleteVisit: (id: number) =>
     set((state) => ({
