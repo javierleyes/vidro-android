@@ -1,6 +1,8 @@
+import { API } from '../configuration/Settings';
+
 // API Configuration
 const API_CONFIG = {
-  BASE_URL: 'https://localhost:63005',
+  BASE_URL: API.BASE_URL,
   ENDPOINTS: {
     VISITS: '/visits',
     // Add more endpoints here as your API grows
