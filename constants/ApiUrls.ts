@@ -5,10 +5,6 @@ const API_CONFIG = {
   BASE_URL: API.BASE_URL,
   ENDPOINTS: {
     VISITS: '/visits',
-    // Add more endpoints here as your API grows
-    // USERS: '/users',
-    // AUTH: '/auth',
-    // REPORTS: '/reports',
   }
 } as const;
 
@@ -16,10 +12,7 @@ const API_CONFIG = {
 export const API_URLS = {
   GET_ALL_VISITS: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}`,
   CREATE_VISIT: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}`,
-  // Add more complete URLs here
-  // USERS: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USERS}`,
-  // AUTH: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH}`,
-  // REPORTS: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.REPORTS}`,
+  DELETE_VISIT: (id: number) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}/${id}`,
 } as const;
 
 // Export base URL and endpoints separately if needed

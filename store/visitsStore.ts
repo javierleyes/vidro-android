@@ -16,7 +16,7 @@ interface VisitsState {
   error: string | null;
   fetchVisits: () => Promise<void>;
   addVisit: (visit: Omit<Visit, 'id'>) => Promise<void>;
-  deleteVisit: (id: number) => void;
+  deleteVisit: (id: number) => Promise<void>;
   completeVisit: (id: number) => void;
   updateVisit: (id: number, updatedVisit: Partial<Visit>) => void;
 }
@@ -78,10 +78,29 @@ export const useVisitsStore = create<VisitsState>((set, get) => ({
     }
   },
   
-  deleteVisit: (id: number) =>
-    set((state) => ({
-      visits: state.visits.filter((visit) => visit.id !== id)
-    })),
+  deleteVisit: async (id: number) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await fetch(API_URLS.DELETE_VISIT(id), {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      set((state) => ({
+        visits: state.visits.filter((visit) => visit.id !== id),
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to delete visit',
+        isLoading: false 
+      });
+    }
+  },
   
   completeVisit: (id: number) =>
     set((state) => {

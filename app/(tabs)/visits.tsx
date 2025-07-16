@@ -53,11 +53,16 @@ export default function VisitsScreen() {
     setSelectedVisit(null);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedVisit) {
-      deleteVisit(selectedVisit.id);
-      setDeleteModalVisible(false);
-      setSelectedVisit(null);
+      try {
+        await deleteVisit(selectedVisit.id);
+        setDeleteModalVisible(false);
+        setSelectedVisit(null);
+      } catch (error) {
+        // Error is already handled in the store, but you could add additional UI feedback here
+        console.error('Failed to delete visit:', error);
+      }
     }
   };
 
