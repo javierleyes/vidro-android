@@ -1,22 +1,20 @@
 {
   "expo": {
     "name": "vidro",
-    "slug": "vidro",
+    "slug": "vidro-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "vidro",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.jleyes.vidroapp"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +35,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e3908f4f-e3c3-42d8-b795-57004de4dcc1"
+      }
+    },
+    "owner": "jleyes",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e3908f4f-e3c3-42d8-b795-57004de4dcc1"
     }
   }
 }
