@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { VisitStatus } from '@/constants/Status';
 import { useVisitsStore } from '@/store/visitsStore';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
@@ -15,7 +16,7 @@ export default function VisitsScreen() {
   
   // Fetch visits when component mounts
   useEffect(() => {
-    fetchVisits();
+    fetchVisits(VisitStatus.PENDING);
   }, [fetchVisits]);
   
   // Form state for adding new visit
@@ -210,7 +211,7 @@ export default function VisitsScreen() {
               <ThemedText style={styles.errorText}>Error: {error}</ThemedText>
               <TouchableOpacity 
                 style={styles.retryButton}
-                onPress={fetchVisits}
+                onPress={() => fetchVisits(VisitStatus.PENDING)}
               >
                 <ThemedText style={styles.retryButtonText}>Retry</ThemedText>
               </TouchableOpacity>

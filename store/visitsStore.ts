@@ -15,7 +15,7 @@ interface VisitsState {
   completedVisits: Visit[];
   isLoading: boolean;
   error: string | null;
-  fetchVisits: () => Promise<void>;
+  fetchVisits: (status?: number) => Promise<void>;
   addVisit: (visit: Omit<Visit, 'id'>) => Promise<void>;
   deleteVisit: (id: number) => Promise<void>;
   completeVisit: (id: number) => Promise<void>;
@@ -29,11 +29,12 @@ export const useVisitsStore = create<VisitsState>((set, get) => ({
   isLoading: false,
   error: null,
   
-  fetchVisits: async () => {
+  fetchVisits: async (status?: number) => {
     set({ isLoading: true, error: null });
     
     try {
-      const response = await fetch(API_URLS.GET_ALL_VISITS); 
+      const url = status ? `${API_URLS.GET_ALL_VISITS}?status=${status}` : API_URLS.GET_ALL_VISITS;
+      const response = await fetch(url); 
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
