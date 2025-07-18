@@ -13,6 +13,7 @@ export const API_URLS = {
   GET_ALL_VISITS: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}`,
   CREATE_VISIT: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}`,
   DELETE_VISIT: (id: number) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}/${id}`,
+  COMPLETE_VISIT: (id: number) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}/${id}`,
 } as const;
 
 // Export base URL and endpoints separately if needed

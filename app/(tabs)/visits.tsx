@@ -40,11 +40,16 @@ export default function VisitsScreen() {
     setDeleteModalVisible(true);
   };
 
-  const confirmComplete = () => {
+  const confirmComplete = async () => {
     if (selectedVisit) {
-      completeVisit(selectedVisit.id);
-      setCompleteModalVisible(false);
-      setSelectedVisit(null);
+      try {
+        await completeVisit(selectedVisit.id);
+        setCompleteModalVisible(false);
+        setSelectedVisit(null);
+      } catch (error) {
+        // Error is already handled in the store, but you could add additional UI feedback here
+        console.error('Failed to complete visit:', error);
+      }
     }
   };
 

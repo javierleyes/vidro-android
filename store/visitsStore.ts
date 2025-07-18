@@ -1,4 +1,5 @@
 import { API_URLS } from '@/constants/ApiUrls';
+import { VisitStatus } from '@/constants/Status';
 import { create } from 'zustand';
 
 export interface Visit {
@@ -17,7 +18,7 @@ interface VisitsState {
   fetchVisits: () => Promise<void>;
   addVisit: (visit: Omit<Visit, 'id'>) => Promise<void>;
   deleteVisit: (id: number) => Promise<void>;
-  completeVisit: (id: number) => void;
+  completeVisit: (id: number) => Promise<void>;
   updateVisit: (id: number, updatedVisit: Partial<Visit>) => void;
 }
 
@@ -102,16 +103,40 @@ export const useVisitsStore = create<VisitsState>((set, get) => ({
     }
   },
   
-  completeVisit: (id: number) =>
-    set((state) => {
-      const visitToComplete = state.visits.find((visit) => visit.id === id);
-      if (!visitToComplete) return state;
+  completeVisit: async (id: number) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await fetch(API_URLS.COMPLETE_VISIT(id), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: VisitStatus.COMPLETED }),
+      });
       
-      return {
-        visits: state.visits.filter((visit) => visit.id !== id),
-        completedVisits: [...state.completedVisits, visitToComplete]
-      };
-    }),
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Move the visit from visits to completedVisits after successful API call
+      set((state) => {
+        const visitToComplete = state.visits.find((visit) => visit.id === id);
+        if (!visitToComplete) return { ...state, isLoading: false };
+        
+        return {
+          visits: state.visits.filter((visit) => visit.id !== id),
+          completedVisits: [...state.completedVisits, visitToComplete],
+          isLoading: false,
+        };
+      });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to complete visit',
+        isLoading: false 
+      });
+    }
+  },
   
   updateVisit: (id: number, updatedVisit: Partial<Visit>) =>
     set((state) => ({
