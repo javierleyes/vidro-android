@@ -19,7 +19,6 @@ interface VisitsState {
   addVisit: (visit: Omit<Visit, 'id'>) => Promise<void>;
   deleteVisit: (id: number) => Promise<void>;
   completeVisit: (id: number) => Promise<void>;
-  updateVisit: (id: number, updatedVisit: Partial<Visit>) => void;
 }
 
 
@@ -137,12 +136,6 @@ export const useVisitsStore = create<VisitsState>((set, get) => ({
         isLoading: false 
       });
     }
-  },
-  
-  updateVisit: (id: number, updatedVisit: Partial<Visit>) =>
-    set((state) => ({
-      visits: state.visits.map((visit) =>
-        visit.id === id ? { ...visit, ...updatedVisit } : visit
-      )
-    }))
+  }
+
 }));

@@ -99,12 +99,7 @@ export default function VisitsScreen() {
       return false;
     }
     
-    // Validate date format (basic check)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(formData.date)) {
-      Alert.alert('Error', 'Please enter date in YYYY-MM-DD format');
-      return false;
-    }
+    // No need for date format validation since it's set by the date picker
     
     return true;
   };
@@ -112,8 +107,12 @@ export default function VisitsScreen() {
   const confirmAddVisit = async () => {
     if (!validateForm()) return;
     
+    // Set the selected date to 23:59:59 for the API call
+    const apiDate = new Date(selectedDate);
+    apiDate.setHours(23, 59, 59, 999);
+    
     const newVisit = {
-      date: formData.date,
+      date: apiDate.toISOString(),
       name: formData.name,
       address: formData.address,
       phone: formData.phone
@@ -154,7 +153,10 @@ export default function VisitsScreen() {
     
     if (date) {
       setSelectedDate(date);
-      const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const formattedDate = date.toLocaleDateString('es-AR', { 
+        weekday: 'short', 
+        day: 'numeric' 
+      });
       setFormData({...formData, date: formattedDate});
     }
   };
@@ -421,7 +423,7 @@ export default function VisitsScreen() {
                   style={styles.input}
                   value={formData.phone}
                   onChangeText={(text) => setFormData({...formData, phone: text})}
-                  placeholder="(555) 123-4567"
+                  placeholder="1122435566"
                   placeholderTextColor="#999"
                   keyboardType="phone-pad"
                 />

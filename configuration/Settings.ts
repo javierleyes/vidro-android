@@ -42,18 +42,10 @@ export const ENVIRONMENT = {
 const ENVIRONMENT_OVERRIDES = {
   development: {
     API: {
-      BASE_URL: 'https://localhost:50254',
+      BASE_URL: 'https://localhost:58949',
     },
     APP: {
       DEBUG: true,
-    },
-  },
-  staging: {
-    API: {
-      BASE_URL: 'https://vidro-api.onrender.com',
-    },
-    APP: {
-      DEBUG: false,
     },
   },
   production: {
