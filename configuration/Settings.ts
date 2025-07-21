@@ -42,7 +42,7 @@ export const ENVIRONMENT = {
 const ENVIRONMENT_OVERRIDES = {
   development: {
     API: {
-      BASE_URL: 'https://localhost:58949',
+      BASE_URL: 'https://localhost:64614',
     },
     APP: {
       DEBUG: true,
