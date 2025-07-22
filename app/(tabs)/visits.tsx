@@ -313,12 +313,12 @@ export default function VisitsScreen() {
           <ThemedView style={styles.modalContainer}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="exclamationmark.triangle" color="#F44336" />
-              <ThemedText type="subtitle" style={styles.modalTitle}>Eliminar Visita</ThemedText>
+              <ThemedText type="subtitle" style={styles.modalTitle}>Eliminar visita</ThemedText>
             </ThemedView>
             
             <ThemedView style={styles.modalBody}>
               <ThemedText style={styles.modalText}>
-                ¿Estás seguro de que quieres eliminar la visita con {selectedVisit?.name}?
+                ¿Eliminar la visita con {selectedVisit?.name}?
               </ThemedText>
               <ThemedText style={styles.modalSubtext}>
                 Esta acción no se puede deshacer.
@@ -354,7 +354,7 @@ export default function VisitsScreen() {
           <ThemedView style={styles.modalContainer}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="checkmark.circle" color="#4CAF50" />
-              <ThemedText type="subtitle" style={styles.modalTitle}>Completar Visita</ThemedText>
+              <ThemedText type="subtitle" style={styles.modalTitle}>Completar visita</ThemedText>
             </ThemedView>
             
             <ThemedView style={styles.modalBody}>
