@@ -6,7 +6,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useVisitsStore } from '@/store/visitsStore';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitsScreen() {
   const { visits, isLoading, error, deleteVisit, completeVisit, addVisit, fetchVisits } = useVisitsStore();
@@ -14,6 +14,7 @@ export default function VisitsScreen() {
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<{id: number, name: string} | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
   
   // Theme colors
   const backgroundColor = useThemeColor({}, 'background');
@@ -38,6 +39,16 @@ export default function VisitsScreen() {
   // Date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Pull to refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchVisits(VisitStatus.PENDING);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleCompleteVisit = (visitId: number, visitorName: string) => {
     setSelectedVisit({ id: visitId, name: visitorName });
@@ -175,7 +186,18 @@ export default function VisitsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#2196F3']} // Android
+            tintColor="#2196F3" // iOS
+          />
+        }
+      >
         {/* Header */}
         <ThemedView style={styles.header}>
           <IconSymbol
@@ -190,16 +212,6 @@ export default function VisitsScreen() {
         </ThemedView>
       
       <ThemedView style={styles.tableContainer}>
-        {/* Refresh Button */}
-        <ThemedView style={styles.refreshButtonContainer}>
-          <TouchableOpacity 
-            style={styles.refreshButton}
-            onPress={() => fetchVisits(VisitStatus.PENDING)}
-          >
-            <IconSymbol size={24} name="arrow.clockwise" color="#2196F3" />
-          </TouchableOpacity>
-        </ThemedView>
-        
         {/* Table Header */}
         <ThemedView style={styles.tableHeader}>
           <ThemedView style={styles.columnHeader}>
@@ -799,19 +811,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
-  },
-  refreshButtonContainer: {
-    alignItems: 'flex-end',
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  refreshButton: {
-    backgroundColor: 'transparent',
-    borderRadius: 20,
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 40,
-    minHeight: 40,
   },
 });
