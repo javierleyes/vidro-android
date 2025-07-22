@@ -2,10 +2,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { VisitStatus } from '@/constants/Status';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useVisitsStore } from '@/store/visitsStore';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitsScreen() {
   const { visits, isLoading, error, deleteVisit, completeVisit, addVisit, fetchVisits } = useVisitsStore();
@@ -13,6 +14,13 @@ export default function VisitsScreen() {
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<{id: number, name: string} | null>(null);
+  
+  // Theme colors
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'text');
+  const inputBackgroundColor = useThemeColor({ light: '#fafafa', dark: '#2a2a2a' }, 'background');
+  const inputBorderColor = useThemeColor({ light: '#d0d0d0', dark: '#555' }, 'text');
   
   // Fetch visits when component mounts
   useEffect(() => {
@@ -166,10 +174,10 @@ export default function VisitsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ThemedView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
+        <ThemedView style={styles.header}>
           <IconSymbol
             size={60}
             color="#2196F3"
@@ -179,47 +187,47 @@ export default function VisitsScreen() {
           <View style={styles.titleContainer}>
             <ThemedText type="title" style={styles.titleText}>Future Visits</ThemedText>
           </View>
-        </View>
+        </ThemedView>
       
-      <View style={styles.tableContainer}>
+      <ThemedView style={styles.tableContainer}>
         {/* Refresh Button */}
-        <View style={styles.refreshButtonContainer}>
+        <ThemedView style={styles.refreshButtonContainer}>
           <TouchableOpacity 
             style={styles.refreshButton}
             onPress={() => fetchVisits(VisitStatus.PENDING)}
           >
             <IconSymbol size={24} name="arrow.clockwise" color="#2196F3" />
           </TouchableOpacity>
-        </View>
+        </ThemedView>
         
         {/* Table Header */}
-        <View style={styles.tableHeader}>
-          <View style={styles.columnHeader}>
+        <ThemedView style={styles.tableHeader}>
+          <ThemedView style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Day</ThemedText>
-          </View>
-          <View style={styles.columnHeader}>
+          </ThemedView>
+          <ThemedView style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Name</ThemedText>
-          </View>
-          <View style={styles.columnHeader}>
+          </ThemedView>
+          <ThemedView style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Address</ThemedText>
-          </View>
-          <View style={styles.columnHeader}>
+          </ThemedView>
+          <ThemedView style={styles.columnHeader}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Phone</ThemedText>
-          </View>
-          <View style={styles.columnHeaderActions}>
+          </ThemedView>
+          <ThemedView style={styles.columnHeaderActions}>
             <ThemedText type="defaultSemiBold" style={styles.headerText}>Actions</ThemedText>
-          </View>
-        </View>
+          </ThemedView>
+        </ThemedView>
 
         {/* Table Rows */}
         <ScrollView style={styles.tableBody}>
           {isLoading ? (
-            <View style={styles.loadingContainer}>
+            <ThemedView style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#2196F3" />
               <ThemedText style={styles.loadingText}>Loading visits...</ThemedText>
-            </View>
+            </ThemedView>
           ) : error ? (
-            <View style={styles.errorContainer}>
+            <ThemedView style={styles.errorContainer}>
               <ThemedText style={styles.errorText}>Error: {error}</ThemedText>
               <TouchableOpacity 
                 style={styles.retryButton}
@@ -227,34 +235,34 @@ export default function VisitsScreen() {
               >
                 <ThemedText style={styles.retryButtonText}>Retry</ThemedText>
               </TouchableOpacity>
-            </View>
+            </ThemedView>
           ) : visits.length === 0 ? (
-            <View style={styles.emptyContainer}>
+            <ThemedView style={styles.emptyContainer}>
               <ThemedText style={styles.emptyText}>No visits scheduled</ThemedText>
-            </View>
+            </ThemedView>
           ) : (
             visits
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
               .map((visit) => (
-              <View key={visit.id} style={styles.tableRow}>
-                <View style={styles.column}>
+              <ThemedView key={visit.id} style={styles.tableRow}>
+                <ThemedView style={styles.column}>
                   <ThemedText style={styles.cellText}>
                     {new Date(visit.date).toLocaleDateString('es-AR', { 
                       weekday: 'short', 
                       day: 'numeric' 
                     })}
                   </ThemedText>
-                </View>
-                <View style={styles.column}>
+                </ThemedView>
+                <ThemedView style={styles.column}>
                   <ThemedText style={styles.cellText}>{visit.name}</ThemedText>
-                </View>
-                <View style={styles.column}>
+                </ThemedView>
+                <ThemedView style={styles.column}>
                   <ThemedText style={styles.cellText} numberOfLines={2}>{visit.address}</ThemedText>
-                </View>
-                <View style={styles.column}>
+                </ThemedView>
+                <ThemedView style={styles.column}>
                   <ThemedText style={styles.cellText}>{visit.phone}</ThemedText>
-                </View>
-                <View style={styles.columnActions}>
+                </ThemedView>
+                <ThemedView style={styles.columnActions}>
                   <TouchableOpacity 
                     style={[styles.actionButton, styles.completeButton]}
                     onPress={() => handleCompleteVisit(visit.id, visit.name)}
@@ -267,22 +275,22 @@ export default function VisitsScreen() {
                   >
                     <ThemedText style={styles.buttonIcon}>❌</ThemedText>
                   </TouchableOpacity>
-                </View>
-              </View>
+                </ThemedView>
+              </ThemedView>
             ))
           )}
         </ScrollView>
         
         {/* Add New Visit Button */}
-        <View style={styles.addButtonContainer}>
+        <ThemedView style={styles.addButtonContainer}>
           <TouchableOpacity 
             style={styles.addButton}
             onPress={handleAddVisit}
           >
             <ThemedText style={styles.addButtonIcon}>➕</ThemedText>
           </TouchableOpacity>
-        </View>
-      </View>
+        </ThemedView>
+      </ThemedView>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -384,7 +392,7 @@ export default function VisitsScreen() {
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.inputLabel}>Date *</ThemedText>
                 <TouchableOpacity
-                  style={styles.datePickerButton}
+                  style={[styles.datePickerButton, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor }]}
                   onPress={showDatePickerModal}
                 >
                   <ThemedText style={styles.datePickerText}>
@@ -406,7 +414,7 @@ export default function VisitsScreen() {
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.inputLabel}>Name *</ThemedText>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={formData.name}
                   onChangeText={(text) => setFormData({...formData, name: text})}
                   placeholder="Enter visitor's name"
@@ -417,7 +425,7 @@ export default function VisitsScreen() {
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.inputLabel}>Address *</ThemedText>
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={formData.address}
                   onChangeText={(text) => setFormData({...formData, address: text})}
                   placeholder="Enter full address"
@@ -430,7 +438,7 @@ export default function VisitsScreen() {
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.inputLabel}>Phone *</ThemedText>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={formData.phone}
                   onChangeText={(text) => setFormData({...formData, phone: text})}
                   placeholder="1122435566"
@@ -460,14 +468,13 @@ export default function VisitsScreen() {
         </View>
       </Modal>
       </ScrollView>
-    </SafeAreaView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   scrollView: {
     flex: 1,
@@ -476,7 +483,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     marginBottom: 10,
-    backgroundColor: '#ffffff',
   },
   headerIcon: {
     marginBottom: 10,
@@ -488,14 +494,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   titleText: {
-    color: '#333333',
     fontWeight: 'bold',
   },
   tableContainer: {
     flex: 1,
     marginTop: 8,
     marginHorizontal: 16,
-    backgroundColor: '#ffffff',
   },
   tableHeader: {
     flexDirection: 'row',
@@ -503,27 +507,22 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingBottom: 8,
     marginBottom: 8,
-    backgroundColor: '#ffffff',
   },
   columnHeader: {
     flex: 1,
     paddingHorizontal: 4,
-    backgroundColor: '#ffffff',
   },
   columnHeaderActions: {
     width: 120,
     paddingHorizontal: 4,
-    backgroundColor: '#ffffff',
   },
   headerText: {
     fontSize: 14,
     textAlign: 'center',
-    color: '#333333',
     fontWeight: '600',
   },
   tableBody: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   tableRow: {
     flexDirection: 'row',
@@ -531,13 +530,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     minHeight: 60,
-    backgroundColor: '#ffffff',
   },
   column: {
     flex: 1,
     paddingHorizontal: 4,
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
   },
   columnActions: {
     width: 120,
@@ -545,7 +542,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
   },
   actionButton: {
     padding: 8,
@@ -566,13 +562,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 16,
-    color: '#333333',
   },
   addButtonContainer: {
     marginTop: 16,
     paddingHorizontal: 16,
     alignItems: 'center',
-    backgroundColor: '#ffffff',
   },
   addButton: {
     backgroundColor: 'transparent',
@@ -599,7 +593,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     margin: 20,
-    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 24,
     shadowColor: '#000',
@@ -615,24 +608,20 @@ const styles = StyleSheet.create({
   modalHeader: {
     alignItems: 'center',
     marginBottom: 16,
-    backgroundColor: '#ffffff',
   },
   modalTitle: {
     marginTop: 8,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#333333',
   },
   modalBody: {
     marginBottom: 24,
-    backgroundColor: '#ffffff',
   },
   modalText: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 8,
-    color: '#333333',
   },
   modalSubtext: {
     fontSize: 14,
@@ -643,7 +632,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
-    backgroundColor: '#ffffff',
   },
   modalButton: {
     flex: 1,
@@ -690,7 +678,6 @@ const styles = StyleSheet.create({
   // Form Modal styles
   formModalContainer: {
     margin: 20,
-    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 24,
     shadowColor: '#000',
@@ -706,27 +693,21 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     maxHeight: 500,
-    backgroundColor: '#ffffff',
   },
   inputGroup: {
     marginBottom: 16,
-    backgroundColor: '#ffffff',
   },
   inputLabel: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#333333',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d0d0d0',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#fafafa',
-    color: '#333333',
   },
   textArea: {
     minHeight: 80,
@@ -751,12 +732,10 @@ const styles = StyleSheet.create({
   },
   datePickerButton: {
     borderWidth: 1,
-    borderColor: '#d0d0d0',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: '#fafafa',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -764,7 +743,6 @@ const styles = StyleSheet.create({
   },
   datePickerText: {
     fontSize: 16,
-    color: '#333333',
   },
   buttonIcon: {
     fontSize: 16,
@@ -781,7 +759,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 40,
-    backgroundColor: '#ffffff',
   },
   loadingText: {
     marginTop: 12,
@@ -794,7 +771,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 40,
-    backgroundColor: '#ffffff',
   },
   errorText: {
     fontSize: 16,
@@ -818,7 +794,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 40,
-    backgroundColor: '#ffffff',
   },
   emptyText: {
     fontSize: 16,
@@ -829,7 +804,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginBottom: 12,
     paddingHorizontal: 4,
-    backgroundColor: '#ffffff',
   },
   refreshButton: {
     backgroundColor: 'transparent',
