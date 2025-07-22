@@ -19,6 +19,7 @@ const MAPPING = {
   'calendar.circle.fill': 'event',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'arrow.clockwise': 'refresh'
 } as IconMapping;
 
 /**

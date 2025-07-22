@@ -182,6 +182,16 @@ export default function VisitsScreen() {
         </View>
       
       <View style={styles.tableContainer}>
+        {/* Refresh Button */}
+        <View style={styles.refreshButtonContainer}>
+          <TouchableOpacity 
+            style={styles.refreshButton}
+            onPress={() => fetchVisits(VisitStatus.PENDING)}
+          >
+            <IconSymbol size={24} name="arrow.clockwise" color="#2196F3" />
+          </TouchableOpacity>
+        </View>
+        
         {/* Table Header */}
         <View style={styles.tableHeader}>
           <View style={styles.columnHeader}>
@@ -540,22 +550,17 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.8)',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 40,
+    minHeight: 40,
   },
   completeButton: {
     backgroundColor: 'transparent',
-    borderColor: 'transparent',
   },
   deleteButton: {
     backgroundColor: 'transparent',
-    borderColor: 'transparent',
   },
   cellText: {
     fontSize: 12,
@@ -819,5 +824,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  refreshButtonContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 12,
+    paddingHorizontal: 4,
+    backgroundColor: '#ffffff',
+  },
+  refreshButton: {
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 40,
+    minHeight: 40,
   },
 });
