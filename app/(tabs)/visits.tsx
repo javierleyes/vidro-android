@@ -17,9 +17,7 @@ export default function VisitsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   
   // Theme colors
-  const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'text');
   const inputBackgroundColor = useThemeColor({ light: '#fafafa', dark: '#2a2a2a' }, 'background');
   const inputBorderColor = useThemeColor({ light: '#d0d0d0', dark: '#555' }, 'text');
   
@@ -102,19 +100,19 @@ export default function VisitsScreen() {
 
   const validateForm = () => {
     if (!formData.date.trim()) {
-      Alert.alert('Error', 'Please enter a date');
+      Alert.alert('Error', 'Por favor ingrese una fecha');
       return false;
     }
     if (!formData.name.trim()) {
-      Alert.alert('Error', 'Please enter a name');
+      Alert.alert('Error', 'Por favor ingrese un nombre');
       return false;
     }
     if (!formData.address.trim()) {
-      Alert.alert('Error', 'Please enter an address');
+      Alert.alert('Error', 'Por favor ingrese una dirección');
       return false;
     }
     if (!formData.phone.trim()) {
-      Alert.alert('Error', 'Please enter a phone number');
+      Alert.alert('Error', 'Por favor ingrese un número de teléfono');
       return false;
     }
     
@@ -207,7 +205,7 @@ export default function VisitsScreen() {
             style={styles.headerIcon}
           />
           <View style={styles.titleContainer}>
-            <ThemedText type="title" style={styles.titleText}>Future Visits</ThemedText>
+            <ThemedText type="title" style={styles.titleText}>Próximas visitas</ThemedText>
           </View>
         </ThemedView>
       
@@ -215,19 +213,19 @@ export default function VisitsScreen() {
         {/* Table Header */}
         <ThemedView style={styles.tableHeader}>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Day</ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.headerText}>Día</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Name</ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.headerText}>Nombre</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Address</ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.headerText}>Dirección</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Phone</ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.headerText}>Teléfono</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeaderActions}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Actions</ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.headerText}>Acciones</ThemedText>
           </ThemedView>
         </ThemedView>
 
@@ -236,7 +234,7 @@ export default function VisitsScreen() {
           {isLoading ? (
             <ThemedView style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#2196F3" />
-              <ThemedText style={styles.loadingText}>Loading visits...</ThemedText>
+              <ThemedText style={styles.loadingText}>Cargando visitas...</ThemedText>
             </ThemedView>
           ) : error ? (
             <ThemedView style={styles.errorContainer}>
@@ -245,12 +243,12 @@ export default function VisitsScreen() {
                 style={styles.retryButton}
                 onPress={() => fetchVisits(VisitStatus.PENDING)}
               >
-                <ThemedText style={styles.retryButtonText}>Retry</ThemedText>
+                <ThemedText style={styles.retryButtonText}>Reintentar</ThemedText>
               </TouchableOpacity>
             </ThemedView>
           ) : visits.length === 0 ? (
             <ThemedView style={styles.emptyContainer}>
-              <ThemedText style={styles.emptyText}>No visits scheduled</ThemedText>
+              <ThemedText style={styles.emptyText}>No hay visitas programadas</ThemedText>
             </ThemedView>
           ) : (
             visits
@@ -315,15 +313,15 @@ export default function VisitsScreen() {
           <ThemedView style={styles.modalContainer}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="exclamationmark.triangle" color="#F44336" />
-              <ThemedText type="subtitle" style={styles.modalTitle}>Delete Visit</ThemedText>
+              <ThemedText type="subtitle" style={styles.modalTitle}>Eliminar Visita</ThemedText>
             </ThemedView>
             
             <ThemedView style={styles.modalBody}>
               <ThemedText style={styles.modalText}>
-                Are you sure you want to delete the visit with {selectedVisit?.name}?
+                ¿Estás seguro de que quieres eliminar la visita con {selectedVisit?.name}?
               </ThemedText>
               <ThemedText style={styles.modalSubtext}>
-                This action cannot be undone.
+                Esta acción no se puede deshacer.
               </ThemedText>
             </ThemedView>
 
@@ -332,13 +330,13 @@ export default function VisitsScreen() {
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={cancelDelete}
               >
-                <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                <ThemedText style={styles.cancelButtonText}>Cancelar</ThemedText>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.confirmDeleteButton]}
                 onPress={confirmDelete}
               >
-                <ThemedText style={styles.deleteButtonText}>Delete</ThemedText>
+                <ThemedText style={styles.deleteButtonText}>Eliminar</ThemedText>
               </TouchableOpacity>
             </ThemedView>
           </ThemedView>
@@ -356,15 +354,15 @@ export default function VisitsScreen() {
           <ThemedView style={styles.modalContainer}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="checkmark.circle" color="#4CAF50" />
-              <ThemedText type="subtitle" style={styles.modalTitle}>Complete Visit</ThemedText>
+              <ThemedText type="subtitle" style={styles.modalTitle}>Completar Visita</ThemedText>
             </ThemedView>
             
             <ThemedView style={styles.modalBody}>
               <ThemedText style={styles.modalText}>
-                Mark visit with {selectedVisit?.name} as completed?
+                ¿Marcar la visita con {selectedVisit?.name} como completada?
               </ThemedText>
               <ThemedText style={styles.modalSubtext}>
-                This will mark the visit as finished.
+                Esto marcará la visita como finalizada.
               </ThemedText>
             </ThemedView>
 
@@ -373,13 +371,13 @@ export default function VisitsScreen() {
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={cancelComplete}
               >
-                <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                <ThemedText style={styles.cancelButtonText}>Cancelar</ThemedText>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.confirmCompleteButton]}
                 onPress={confirmComplete}
               >
-                <ThemedText style={styles.completeButtonText}>Complete</ThemedText>
+                <ThemedText style={styles.completeButtonText}>Completar</ThemedText>
               </TouchableOpacity>
             </ThemedView>
           </ThemedView>
@@ -397,18 +395,18 @@ export default function VisitsScreen() {
           <ThemedView style={styles.formModalContainer}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="plus.circle" color="#2196F3" />
-              <ThemedText type="subtitle" style={styles.modalTitle}>Add New Visit</ThemedText>
+              <ThemedText type="subtitle" style={styles.modalTitle}>Agregar visita</ThemedText>
             </ThemedView>
             
             <ScrollView style={styles.formContainer}>
               <ThemedView style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Date *</ThemedText>
+                <ThemedText style={styles.inputLabel}>Fecha *</ThemedText>
                 <TouchableOpacity
                   style={[styles.datePickerButton, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor }]}
                   onPress={showDatePickerModal}
                 >
                   <ThemedText style={styles.datePickerText}>
-                    {formData.date || 'Select Date'}
+                    {formData.date || 'Seleccionar Fecha'}
                   </ThemedText>
                   <IconSymbol size={20} name="calendar" color="#2196F3" />
                 </TouchableOpacity>
@@ -424,23 +422,23 @@ export default function VisitsScreen() {
               </ThemedView>
 
               <ThemedView style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Name *</ThemedText>
+                <ThemedText style={styles.inputLabel}>Nombre *</ThemedText>
                 <TextInput
                   style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={formData.name}
                   onChangeText={(text) => setFormData({...formData, name: text})}
-                  placeholder="Enter visitor's name"
+                  placeholder="Ingrese el nombre de la persona"
                   placeholderTextColor="#999"
                 />
               </ThemedView>
 
               <ThemedView style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Address *</ThemedText>
+                <ThemedText style={styles.inputLabel}>Dirección *</ThemedText>
                 <TextInput
                   style={[styles.input, styles.textArea, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={formData.address}
                   onChangeText={(text) => setFormData({...formData, address: text})}
-                  placeholder="Enter full address"
+                  placeholder="Ingrese la dirección completa"
                   placeholderTextColor="#999"
                   multiline={true}
                   numberOfLines={3}
@@ -448,7 +446,7 @@ export default function VisitsScreen() {
               </ThemedView>
 
               <ThemedView style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Phone *</ThemedText>
+                <ThemedText style={styles.inputLabel}>Teléfono *</ThemedText>
                 <TextInput
                   style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={formData.phone}
@@ -459,7 +457,7 @@ export default function VisitsScreen() {
                 />
               </ThemedView>
 
-              <ThemedText style={styles.requiredNote}>* Required fields</ThemedText>
+              <ThemedText style={styles.requiredNote}>* Campos obligatorios</ThemedText>
             </ScrollView>
 
             <ThemedView style={styles.modalActions}>
@@ -467,13 +465,13 @@ export default function VisitsScreen() {
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={cancelAddVisit}
               >
-                <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                <ThemedText style={styles.cancelButtonText}>Cancelar</ThemedText>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.confirmAddButton]}
                 onPress={confirmAddVisit}
               >
-                <ThemedText style={styles.addButtonTextModal}>Add Visit</ThemedText>
+                <ThemedText style={styles.addButtonTextModal}>Listo</ThemedText>
               </TouchableOpacity>
             </ThemedView>
           </ThemedView>
