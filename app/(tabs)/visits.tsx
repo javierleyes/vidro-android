@@ -124,9 +124,7 @@ export default function VisitsScreen() {
   const confirmAddVisit = async () => {
     if (!validateForm()) return;
     
-    // Set the selected date to 23:59:59 for the API call
-    const apiDate = new Date(selectedDate);
-    apiDate.setHours(23, 59, 59, 999);
+    const apiDate = new Date(Date.UTC(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59, 999));
     
     const newVisit = {
       date: apiDate.toISOString(),
