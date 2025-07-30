@@ -6,7 +6,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useVisitsStore } from '@/store/visitsStore';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Platform, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, Modal, Platform, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitsScreen() {
   const { visits, isLoading, error, deleteVisit, completeVisit, addVisit, fetchVisits } = useVisitsStore();
@@ -15,6 +15,20 @@ export default function VisitsScreen() {
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<{id: number, name: string} | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Screen dimensions for responsive design
+  const [screenData, setScreenData] = useState(Dimensions.get('window'));
+  const isLandscape = screenData.width > screenData.height;
+  
+  // Update screen dimensions on orientation change
+  useEffect(() => {
+    const onChange = (result: any) => {
+      setScreenData(result.window);
+    };
+    
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => subscription?.remove();
+  }, []);
   
   // Theme colors
   const textColor = useThemeColor({}, 'text');
@@ -195,35 +209,35 @@ export default function VisitsScreen() {
         }
       >
         {/* Header */}
-        <ThemedView style={styles.header}>
+        <ThemedView style={[styles.header, isLandscape && styles.headerLandscape]}>
           <IconSymbol
-            size={60}
+            size={isLandscape ? 40 : 60}
             color="#2196F3"
             name="calendar"
             style={styles.headerIcon}
           />
           <View style={styles.titleContainer}>
-            <ThemedText type="title" style={styles.titleText}>Próximas visitas</ThemedText>
+            <ThemedText type="title" style={[styles.titleText, isLandscape && styles.titleTextLandscape]}>Próximas visitas</ThemedText>
           </View>
         </ThemedView>
       
-      <ThemedView style={styles.tableContainer}>
+      <ThemedView style={[styles.tableContainer, isLandscape && styles.tableContainerLandscape]}>
         {/* Table Header */}
         <ThemedView style={styles.tableHeader}>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Día</ThemedText>
+            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Día</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Nombre</ThemedText>
+            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Nombre</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Dirección</ThemedText>
+            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Dirección</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Teléfono</ThemedText>
+            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Teléfono</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeaderActions}>
-            <ThemedText type="defaultSemiBold" style={styles.headerText}>Acciones</ThemedText>
+            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Acciones</ThemedText>
           </ThemedView>
         </ThemedView>
 
@@ -252,9 +266,9 @@ export default function VisitsScreen() {
             visits
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
               .map((visit) => (
-              <ThemedView key={visit.id} style={styles.tableRow}>
+              <ThemedView key={visit.id} style={[styles.tableRow, isLandscape && styles.tableRowLandscape]}>
                 <ThemedView style={styles.column}>
-                  <ThemedText style={styles.cellText}>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>
                     {new Date(visit.date).toLocaleDateString('es-AR', { 
                       weekday: 'short', 
                       day: 'numeric' 
@@ -262,13 +276,13 @@ export default function VisitsScreen() {
                   </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.column}>
-                  <ThemedText style={styles.cellText}>{visit.name}</ThemedText>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{visit.name}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.column}>
-                  <ThemedText style={styles.cellText} numberOfLines={2}>{visit.address}</ThemedText>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]} numberOfLines={2}>{visit.address}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.column}>
-                  <ThemedText style={styles.cellText}>{visit.phone}</ThemedText>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{visit.phone}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.columnActions}>
                   <TouchableOpacity 
@@ -308,7 +322,7 @@ export default function VisitsScreen() {
         onRequestClose={cancelDelete}
       >
         <View style={styles.modalOverlay}>
-          <ThemedView style={styles.modalContainer}>
+          <ThemedView style={[styles.modalContainer, isLandscape && styles.modalContainerLandscape]}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="exclamationmark.triangle" color="#F44336" />
               <ThemedText type="subtitle" style={styles.modalTitle}>Eliminar visita</ThemedText>
@@ -349,7 +363,7 @@ export default function VisitsScreen() {
         onRequestClose={cancelComplete}
       >
         <View style={styles.modalOverlay}>
-          <ThemedView style={styles.modalContainer}>
+          <ThemedView style={[styles.modalContainer, isLandscape && styles.modalContainerLandscape]}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="checkmark.circle" color="#4CAF50" />
               <ThemedText type="subtitle" style={styles.modalTitle}>Completar visita</ThemedText>
@@ -390,7 +404,7 @@ export default function VisitsScreen() {
         onRequestClose={cancelAddVisit}
       >
         <View style={styles.modalOverlay}>
-          <ThemedView style={styles.formModalContainer}>
+          <ThemedView style={[styles.formModalContainer, isLandscape && styles.formModalContainerLandscape]}>
             <ThemedView style={styles.modalHeader}>
               <IconSymbol size={40} name="plus.circle" color="#2196F3" />
               <ThemedText type="subtitle" style={styles.modalTitle}>Agregar visita</ThemedText>
@@ -492,6 +506,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  headerLandscape: {
+    padding: 10,
+    marginBottom: 5,
+  },
   headerIcon: {
     marginBottom: 10,
   },
@@ -504,10 +522,16 @@ const styles = StyleSheet.create({
   titleText: {
     fontWeight: 'bold',
   },
+  titleTextLandscape: {
+    fontSize: 20,
+  },
   tableContainer: {
     flex: 1,
     marginTop: 8,
     marginHorizontal: 16,
+  },
+  tableContainerLandscape: {
+    marginHorizontal: 20,
   },
   tableHeader: {
     flexDirection: 'row',
@@ -529,6 +553,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
+  headerTextLandscape: {
+    fontSize: 16,
+  },
   tableBody: {
     flex: 1,
   },
@@ -538,6 +565,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     minHeight: 60,
+  },
+  tableRowLandscape: {
+    paddingVertical: 8,
+    minHeight: 50,
   },
   column: {
     flex: 1,
@@ -570,6 +601,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 16,
+  },
+  cellTextLandscape: {
+    fontSize: 14,
+    lineHeight: 18,
   },
   addButtonContainer: {
     marginTop: 16,
@@ -612,6 +647,12 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     borderWidth: 1,
     borderColor: '#e0e0e0',
+  },
+  modalContainerLandscape: {
+    margin: 10,
+    padding: 16,
+    minWidth: 400,
+    maxWidth: 600,
   },
   modalHeader: {
     alignItems: 'center',
@@ -698,6 +739,13 @@ const styles = StyleSheet.create({
     maxHeight: '85%',
     borderWidth: 1,
     borderColor: '#e0e0e0',
+  },
+  formModalContainerLandscape: {
+    margin: 10,
+    padding: 16,
+    minWidth: 500,
+    maxWidth: 700,
+    maxHeight: '90%',
   },
   formContainer: {
     maxHeight: 500,
