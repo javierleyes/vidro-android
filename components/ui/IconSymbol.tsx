@@ -19,7 +19,8 @@ const MAPPING = {
   'calendar.circle.fill': 'event',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-  'arrow.clockwise': 'refresh'
+  'arrow.clockwise': 'refresh',
+  'dollarsign.circle.fill': 'attach-money'
 } as IconMapping;
 
 /**

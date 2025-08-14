@@ -34,9 +34,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="glass"
+        options={{
+          title: 'Lista de precios',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="dollarsign.circle.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="visits"
         options={{
-          title: 'Visits',
+          title: 'Visitas',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar.circle.fill" color={color} />,
         }}
       />
