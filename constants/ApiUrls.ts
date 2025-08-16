@@ -5,6 +5,7 @@ const API_CONFIG = {
   BASE_URL: API.BASE_URL,
   ENDPOINTS: {
     VISITS: '/visits',
+    GLASSES: '/glasses'
   }
 } as const;
 
@@ -14,6 +15,8 @@ export const API_URLS = {
   CREATE_VISIT: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}`,
   DELETE_VISIT: (id: number) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}/${id}`,
   COMPLETE_VISIT: (id: number) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VISITS}/${id}`,
+
+  GET_ALL_GLASSES: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GLASSES}`
 } as const;
 
 // Export base URL and endpoints separately if needed
