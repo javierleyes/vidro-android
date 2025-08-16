@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGlassesStore } from '@/store/glassesStore';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Dimensions, Modal, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function GlassScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -11,7 +11,12 @@ export default function GlassScreen() {
   const isLandscape = screenData.width > screenData.height;
 
   // Glasses store
-  const { glasses, isLoading, error, fetchGlasses } = useGlassesStore();
+  const { glasses, isLoading, error, fetchGlasses, editGlassPrice } = useGlassesStore();
+
+  // Modal state for editing price
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedGlass, setSelectedGlass] = useState<{id: number, name: string, price: string} | null>(null);
+  const [newPrice, setNewPrice] = useState('');
 
   // Fetch glasses on mount
   useEffect(() => {
@@ -35,6 +40,37 @@ export default function GlassScreen() {
     } finally {
       setRefreshing(false);
     }
+  };
+
+  // Open edit modal
+  const handleEditPrice = (glass: {id: number, name: string, price: string}) => {
+    setSelectedGlass(glass);
+    setNewPrice(glass.price);
+    setEditModalVisible(true);
+  };
+
+  // Confirm edit
+  const confirmEditPrice = async () => {
+    if (!selectedGlass) return;
+    if (!newPrice.trim()) {
+      Alert.alert('Error', 'Ingrese un precio válido');
+      return;
+    }
+    try {
+      await editGlassPrice(selectedGlass.id, newPrice);
+      setEditModalVisible(false);
+      setSelectedGlass(null);
+      setNewPrice('');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo actualizar el precio');
+    }
+  };
+
+  // Cancel edit
+  const cancelEditPrice = () => {
+    setEditModalVisible(false);
+    setSelectedGlass(null);
+    setNewPrice('');
   };
 
   return (
@@ -104,13 +140,64 @@ export default function GlassScreen() {
                   <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.price}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.columnActions}>
-                  {/* Actions here */}
+                  <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={() => handleEditPrice(item)}
+                  >
+                    <IconSymbol name="chevron.left.forwardslash.chevron.right" size={22} color="#2196F3" />
+                  </TouchableOpacity>
                 </ThemedView>
               </ThemedView>
             ))
           )}
         </ScrollView>
       </ThemedView>
+      {/* Edit Price Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={editModalVisible}
+        onRequestClose={cancelEditPrice}
+      >
+        <View style={styles.modalOverlay}>
+          <ThemedView style={[styles.formModalContainer, isLandscape && styles.formModalContainerLandscape]}>
+            <ThemedView style={styles.modalHeader}>
+              <IconSymbol size={40} name="dollarsign.circle.fill" color="#2196F3" />
+              <ThemedText type="subtitle" style={styles.modalTitle}>Editar precio</ThemedText>
+            </ThemedView>
+            <ThemedView style={styles.modalBody}>
+              <ThemedText style={styles.modalText}>
+                {selectedGlass?.name}
+              </ThemedText>
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={styles.inputLabel}>Nuevo precio *</ThemedText>
+                <TextInput
+                  style={styles.input}
+                  value={newPrice}
+                  onChangeText={setNewPrice}
+                  placeholder="Ingrese el nuevo precio"
+                  keyboardType="numeric"
+                />
+              </ThemedView>
+              <ThemedText style={styles.requiredNote}>* Campo obligatorio</ThemedText>
+            </ThemedView>
+            <ThemedView style={styles.modalActions}>
+              <TouchableOpacity 
+                style={[styles.modalButton, { backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#d0d0d0' }]}
+                onPress={cancelEditPrice}
+              >
+                <ThemedText style={{ color: '#333', fontWeight: '600' }}>Cancelar</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, { backgroundColor: '#2196f3', borderWidth: 1, borderColor: '#1976d2' }]}
+                onPress={confirmEditPrice}
+              >
+                <ThemedText style={{ color: '#fff', fontWeight: '600' }}>Guardar</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          </ThemedView>
+        </View>
+      </Modal>
       </ScrollView>
     </ThemedView>
   );
