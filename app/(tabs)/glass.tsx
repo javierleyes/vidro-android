@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useGlassesStore } from '@/store/glassesStore';
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, Modal, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
@@ -17,6 +18,11 @@ export default function GlassScreen() {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedGlass, setSelectedGlass] = useState<{id: number, name: string, price: string} | null>(null);
   const [newPrice, setNewPrice] = useState('');
+
+  // Theme colors
+  const textColor = useThemeColor({}, 'text');
+  const inputBackgroundColor = useThemeColor({ light: '#fafafa', dark: '#2a2a2a' }, 'background');
+  const inputBorderColor = useThemeColor({ light: '#d0d0d0', dark: '#555' }, 'text');
 
   // Fetch glasses on mount
   useEffect(() => {
@@ -169,16 +175,19 @@ export default function GlassScreen() {
               <ThemedText style={styles.modalText}>
                 {selectedGlass?.name}
               </ThemedText>
+
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.inputLabel}>Nuevo precio *</ThemedText>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
                   value={newPrice}
                   onChangeText={setNewPrice}
                   placeholder="Ingrese el nuevo precio"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                 />
               </ThemedView>
+
               <ThemedText style={styles.requiredNote}>* Campo obligatorio</ThemedText>
             </ThemedView>
             <ThemedView style={styles.modalActions}>
