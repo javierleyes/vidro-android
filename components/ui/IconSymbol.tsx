@@ -20,7 +20,8 @@ const MAPPING = {
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
   'arrow.clockwise': 'refresh',
-  'dollarsign.circle.fill': 'attach-money'
+  'dollarsign.circle.fill': 'attach-money',
+  'pencil': 'edit'
 } as IconMapping;
 
 /**

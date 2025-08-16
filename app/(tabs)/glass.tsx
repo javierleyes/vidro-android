@@ -150,7 +150,7 @@ export default function GlassScreen() {
                     style={styles.actionButton}
                     onPress={() => handleEditPrice(item)}
                   >
-                    <IconSymbol name="chevron.left.forwardslash.chevron.right" size={22} color="#2196F3" />
+                    <IconSymbol name="pencil" size={22} color="#2196F3" />
                   </TouchableOpacity>
                 </ThemedView>
               </ThemedView>
