@@ -50,7 +50,7 @@ const ENVIRONMENT_OVERRIDES = {
   },
   production: {
     API: {
-      BASE_URL: 'https://vidro-api-0hu7.onrender.com/',
+      BASE_URL: 'https://vidro-api-0hu7.onrender.com',
     },
     APP: {
       DEBUG: false,
