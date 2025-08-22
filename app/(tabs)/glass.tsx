@@ -4,7 +4,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useGlassesStore } from '@/store/glassesStore';
 import React, { useEffect, useState } from 'react';
-import { Alert, Dimensions, Modal, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, Modal, RefreshControl, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function GlassScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -123,8 +123,9 @@ export default function GlassScreen() {
         {/* Table Rows */}
         <ScrollView style={styles.tableBody}>
           {isLoading ? (
-            <ThemedView style={styles.emptyContainer}>
-              <ThemedText style={styles.emptyText}>Cargando vidrios...</ThemedText>
+            <ThemedView style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#2196F3" />
+              <ThemedText style={styles.loadingText}>Cargando vidrios...</ThemedText>
             </ThemedView>
           ) : error ? (
             <ThemedView style={styles.emptyContainer}>
@@ -132,7 +133,7 @@ export default function GlassScreen() {
             </ThemedView>
           ) : glasses.length === 0 ? (
             <ThemedView style={styles.emptyContainer}>
-              <ThemedText style={styles.emptyText}>No hay productos disponibles</ThemedText>
+              <ThemedText style={styles.emptyText}>No hay vidrios disponibles</ThemedText>
             </ThemedView>
           ) : (
             glasses.map((item) => (
@@ -213,6 +214,18 @@ export default function GlassScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
   },
