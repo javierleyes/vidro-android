@@ -147,7 +147,7 @@ export default function GlassScreen() {
                   </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.column}>
-                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceTransparent}</ThemedText>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceTransparent !== null ? item.priceTransparent : '-'}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.column}>
                   <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceColor !== null ? item.priceColor : '-'}</ThemedText>

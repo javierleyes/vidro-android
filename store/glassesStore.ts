@@ -32,7 +32,7 @@ export const useGlassesStore = create<GlassesState>((set) => ({
         ? glassesRaw.map((g) => ({
             id: g.id,
             name: g.name,
-            priceTransparent: typeof g.priceTransparent === 'number' ? g.priceTransparent : Number(g.priceTransparent ?? g.PriceTransparent ?? 0),
+            priceTransparent: g.priceTransparent !== undefined ? g.priceTransparent : (g.priceTransparent ?? null),
             priceColor: g.priceColor !== undefined ? g.priceColor : (g.PriceColor ?? null),
           }))
         : [];
