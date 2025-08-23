@@ -16,8 +16,8 @@ export default function GlassScreen() {
 
   // Modal state for editing price
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedGlass, setSelectedGlass] = useState<{id: number, name: string, price: string} | null>(null);
-  const [newPrice, setNewPrice] = useState('');
+  const [selectedGlass, setSelectedGlass] = useState<{id: string, name: string, priceTransparent: number} | null>(null);
+  const [newPrice, setNewPrice] = useState<number | ''>('');
 
   // Theme colors
   const textColor = useThemeColor({}, 'text');
@@ -50,20 +50,20 @@ export default function GlassScreen() {
 
   // Open edit modal
   const handleEditPrice = (glass: {id: number, name: string, price: string}) => {
-    setSelectedGlass(glass);
-    setNewPrice(glass.price);
-    setEditModalVisible(true);
+  setSelectedGlass({ id: glass.id, name: glass.name, priceTransparent: glass.priceTransparent });
+  setNewPrice(glass.priceTransparent);
+  setEditModalVisible(true);
   };
 
   // Confirm edit
   const confirmEditPrice = async () => {
     if (!selectedGlass) return;
-    if (!newPrice.trim()) {
+    if (newPrice === '' || isNaN(Number(newPrice))) {
       Alert.alert('Error', 'Ingrese un precio válido');
       return;
     }
     try {
-      await editGlassPrice(selectedGlass.id, newPrice);
+      await editGlassPrice(selectedGlass.id, Number(newPrice));
       setEditModalVisible(false);
       setSelectedGlass(null);
       setNewPrice('');
@@ -110,10 +110,13 @@ export default function GlassScreen() {
         {/* Table Header */}
         <ThemedView style={styles.tableHeader}>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Nombre</ThemedText>
+              <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Nombre</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeader}>
-            <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Precio</ThemedText>
+              <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>x m2 (Incoloro)</ThemedText>
+            </ThemedView>
+            <ThemedView style={styles.columnHeader}>
+              <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>x m2 (Color)</ThemedText>
           </ThemedView>
           <ThemedView style={styles.columnHeaderActions}>
             <ThemedText type="defaultSemiBold" style={[styles.headerText, isLandscape && styles.headerTextLandscape]}>Acciones</ThemedText>
@@ -144,7 +147,10 @@ export default function GlassScreen() {
                   </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.column}>
-                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.price}</ThemedText>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceTransparent}</ThemedText>
+                </ThemedView>
+                <ThemedView style={styles.column}>
+                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceColor !== null ? item.priceColor : '-'}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.columnActions}>
                   <TouchableOpacity
