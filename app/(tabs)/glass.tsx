@@ -16,8 +16,9 @@ export default function GlassScreen() {
 
   // Modal state for editing price
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedGlass, setSelectedGlass] = useState<{id: string, name: string, priceTransparent: number} | null>(null);
-  const [newPrice, setNewPrice] = useState<number | ''>('');
+  const [selectedGlass, setSelectedGlass] = useState<{id: string, name: string, priceTransparent: number, priceColor: number} | null>(null);
+  const [newPriceTransparent, setNewPriceTransparent] = useState<string>('');
+  const [newPriceColor, setNewPriceColor] = useState<string>('');
 
   // Theme colors
   const textColor = useThemeColor({}, 'text');
@@ -49,24 +50,38 @@ export default function GlassScreen() {
   };
 
   // Open edit modal
-  const handleEditPrice = (glass: {id: number, name: string, price: string}) => {
-  setSelectedGlass({ id: glass.id, name: glass.name, priceTransparent: glass.priceTransparent });
-  setNewPrice(glass.priceTransparent);
-  setEditModalVisible(true);
+  const handleEditPrice = (glass: {id: string, name: string, priceTransparent: number | null, priceColor: number | null}) => {
+    setSelectedGlass({
+      id: glass.id,
+      name: glass.name,
+      priceTransparent: glass.priceTransparent ?? 0,
+      priceColor: glass.priceColor ?? 0,
+    });
+  setNewPriceTransparent(glass.priceTransparent !== null ? String(glass.priceTransparent) : '');
+  setNewPriceColor(glass.priceColor !== null ? String(glass.priceColor) : '');
+    setEditModalVisible(true);
   };
 
   // Confirm edit
   const confirmEditPrice = async () => {
     if (!selectedGlass) return;
-    if (newPrice === '' || isNaN(Number(newPrice))) {
-      Alert.alert('Error', 'Ingrese un precio válido');
+    if (
+      newPriceTransparent === '' || isNaN(Number(newPriceTransparent)) ||
+      newPriceColor === '' || isNaN(Number(newPriceColor))
+    ) {
+      Alert.alert('Error', 'Ingrese precios válidos');
       return;
     }
     try {
-      await editGlassPrice(selectedGlass.id, Number(newPrice));
+      await editGlassPrice(
+        selectedGlass.id,
+        Number(newPriceTransparent),
+        Number(newPriceColor)
+      );
       setEditModalVisible(false);
       setSelectedGlass(null);
-      setNewPrice('');
+      setNewPriceTransparent('');
+      setNewPriceColor('');
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar el precio');
     }
@@ -76,7 +91,8 @@ export default function GlassScreen() {
   const cancelEditPrice = () => {
     setEditModalVisible(false);
     setSelectedGlass(null);
-    setNewPrice('');
+    setNewPriceTransparent('');
+    setNewPriceColor('');
   };
 
   return (
@@ -139,29 +155,36 @@ export default function GlassScreen() {
               <ThemedText style={styles.emptyText}>No hay vidrios disponibles</ThemedText>
             </ThemedView>
           ) : (
-            glasses.map((item) => (
-              <ThemedView key={item.id} style={[styles.tableRow, isLandscape && styles.tableRowLandscape]}>
-                <ThemedView style={styles.column}>
-                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>
-                    {item.name}
-                  </ThemedText>
+            [...glasses]
+              .sort((a, b) => {
+                // Sort by 'order' property, fallback to 0 if undefined
+                const aOrder = typeof a.order === 'number' ? a.order : 0;
+                const bOrder = typeof b.order === 'number' ? b.order : 0;
+                return aOrder - bOrder;
+              })
+              .map((item) => (
+                <ThemedView key={item.id} style={[styles.tableRow, isLandscape && styles.tableRowLandscape]}>
+                  <ThemedView style={styles.column}>
+                    <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>
+                      {item.name}
+                    </ThemedText>
+                  </ThemedView>
+                  <ThemedView style={styles.column}>
+                    <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceTransparent !== null ? item.priceTransparent : '-'}</ThemedText>
+                  </ThemedView>
+                  <ThemedView style={styles.column}>
+                    <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceColor !== null ? item.priceColor : '-'}</ThemedText>
+                  </ThemedView>
+                  <ThemedView style={styles.columnActions}>
+                    <TouchableOpacity
+                      style={styles.actionButton}
+                      onPress={() => handleEditPrice(item)}
+                    >
+                      <IconSymbol name="pencil" size={22} color="#2196F3" />
+                    </TouchableOpacity>
+                  </ThemedView>
                 </ThemedView>
-                <ThemedView style={styles.column}>
-                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceTransparent !== null ? item.priceTransparent : '-'}</ThemedText>
-                </ThemedView>
-                <ThemedView style={styles.column}>
-                  <ThemedText style={[styles.cellText, isLandscape && styles.cellTextLandscape]}>{item.priceColor !== null ? item.priceColor : '-'}</ThemedText>
-                </ThemedView>
-                <ThemedView style={styles.columnActions}>
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => handleEditPrice(item)}
-                  >
-                    <IconSymbol name="pencil" size={22} color="#2196F3" />
-                  </TouchableOpacity>
-                </ThemedView>
-              </ThemedView>
-            ))
+              ))
           )}
         </ScrollView>
       </ThemedView>
@@ -184,18 +207,28 @@ export default function GlassScreen() {
               </ThemedText>
 
               <ThemedView style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Nuevo precio *</ThemedText>
+                <ThemedText style={styles.inputLabel}>Precio Incoloro *</ThemedText>
                 <TextInput
                   style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
-                  value={newPrice}
-                  onChangeText={setNewPrice}
-                  placeholder="Ingrese el nuevo precio"
+                  value={String(newPriceTransparent)}
+                  onChangeText={text => setNewPriceTransparent(text.replace(/[^0-9.]/g, ''))}
+                  placeholder="Ingrese el nuevo precio incoloro"
                   placeholderTextColor="#999"
                   keyboardType="numeric"
                 />
               </ThemedView>
-
-              <ThemedText style={styles.requiredNote}>* Campo obligatorio</ThemedText>
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={styles.inputLabel}>Precio Color *</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: inputBackgroundColor, borderColor: inputBorderColor, color: textColor }]}
+                  value={String(newPriceColor)}
+                  onChangeText={text => setNewPriceColor(text.replace(/[^0-9.]/g, ''))}
+                  placeholder="Ingrese el nuevo precio color"
+                  placeholderTextColor="#999"
+                  keyboardType="numeric"
+                />
+              </ThemedView>
+              <ThemedText style={styles.requiredNote}>* Campos obligatorios</ThemedText>
             </ThemedView>
             <ThemedView style={styles.modalActions}>
               <TouchableOpacity 

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 export interface Glass {
   id: string;
+  order: number;
   name: string;
   priceTransparent: number | null;
   priceColor: number | null;
@@ -13,7 +14,7 @@ interface GlassesState {
   isLoading: boolean;
   error: string | null;
   fetchGlasses: () => Promise<void>;
-  editGlassPrice: (id: string, price: number) => Promise<void>;
+  editGlassPrice: (id: string, priceTransparent: number, priceColor: number) => Promise<void>;
 }
 
 export const useGlassesStore = create<GlassesState>((set) => ({
@@ -34,6 +35,7 @@ export const useGlassesStore = create<GlassesState>((set) => ({
             name: g.name,
             priceTransparent: g.priceTransparent !== undefined ? g.priceTransparent : (g.priceTransparent ?? null),
             priceColor: g.priceColor !== undefined ? g.priceColor : (g.PriceColor ?? null),
+            order: g.order,
           }))
         : [];
       set({ glasses, isLoading: false });
@@ -45,7 +47,7 @@ export const useGlassesStore = create<GlassesState>((set) => ({
     }
   },
 
-  editGlassPrice: async (id, price) => {
+  editGlassPrice: async (id, priceTransparent, priceColor) => {
     set({ isLoading: true, error: null });
     try {
       const response = await fetch(`${API_URLS.GET_ALL_GLASSES}/${id}`, {
@@ -53,13 +55,12 @@ export const useGlassesStore = create<GlassesState>((set) => ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ priceTransparent: price }),
+        body: JSON.stringify({ priceTransparent, priceColor }),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      // Optionally update local state after successful patch
       set((state) => ({
         glasses: state.glasses.map((glass) =>
-          glass.id === id ? { ...glass, priceTransparent: price } : glass
+          glass.id === id ? { ...glass, priceTransparent, priceColor } : glass
         ),
         isLoading: false,
       }));
